@@ -1,149 +1,109 @@
-@@ -0,0 +1,147 @@
-/*NO 5...
-def binary_to_decimal(binary):
-    stack = []
-    decimal = 0
-    power = 0
+def convert_binary_to_decimal(binary_input):
+    binary_stack = []
+    decimal_result = 0
+    current_power = 0
 
     # Push each bit of the binary number onto the stack
-    for bit in binary:
-        stack.append(int(bit))
+    for binary_bit in binary_input:
+        binary_stack.append(int(binary_bit))
 
     # Process the bits from right to left
-    while stack:
-        bit = stack.pop()
-        decimal += bit * (2 ** power)
-        power += 1
+    while binary_stack:
+        bit = binary_stack.pop()
+        decimal_result += bit * (2 ** current_power)
+        current_power += 1
 
-    return decimal
+    return decimal_result
 
 # Test cases
-binary_numbers = ['11000101', '10101010', '11111111', '10000000', '1111100000']
-for binary_number in binary_numbers:
-    decimal_number = binary_to_decimal(binary_number)
-    print(f"Binary: {binary_number} -> Decimal: {decimal_number}")
+binary_numbers_list = ['11000101', '10101010', '11111111', '10000000', '1111100000']
+for binary_num in binary_numbers_list:
+    decimal_num = convert_binary_to_decimal(binary_num)
+    print(f"Binary: {binary_num} -> Decimal: {decimal_num}")
 
-NO 6...
-def decimal_to_binary(decimal):
-    stack = []
+def convert_decimal_to_binary(decimal_input):
+    binary_stack = []
 
     # Convert decimal to binary using the division remainder method
-    while decimal > 0:
-        remainder = decimal % 2
-        stack.append(remainder)
-        decimal //= 2
+    while decimal_input > 0:
+        remainder = decimal_input % 2
+        binary_stack.append(remainder)
+        decimal_input //= 2
 
     # Pop elements from the stack to form the binary representation
-    binary = ''
-    while stack:
-        binary += str(stack.pop())
+    binary_output = ''
+    while binary_stack:
+        binary_output += str(binary_stack.pop())
 
-    return binary if binary else '0'  # If the input decimal is 0, return '0' as binary
+    return binary_output if binary_output else '0'  # If the input decimal is 0, return '0' as binary
 
 # Test cases
-decimal_numbers = [13, 55, 255, 128, 496]
-for decimal_number in decimal_numbers:
-    binary_number = decimal_to_binary(decimal_number)
-    print(f"Decimal: {decimal_number} -> Binary: {binary_number}")
+decimal_numbers_list = [13, 55, 255, 128, 496]
+for decimal_num in decimal_numbers_list:
+    binary_num = convert_decimal_to_binary(decimal_num)
+    print(f"Decimal: {decimal_num} -> Binary: {binary_num}")
 
+class InfixToPostfixConverter:
+    def __init__(self):
+        self.infix_expression = ""
+        self.postfix_expression = ""
+        self.precedence_map = {'+': 1, '-': 1, '*': 2, '/': 2}
 
-NO 7...
-#include <iostream>
-#include <stack>
-#include <unordered_map>
-#include <string>
-#include <sstream>
+    def is_operator(self, char):
+        return (char == '+' or char == '-' or char == '*' or char == '/')
 
-class InfixToPostfix {
-private:
-    std::string infix;
-    std::string postfix;
-    std::unordered_map<char, int> precedenceMap;
+    def has_higher_precedence(self, op1, op2):
+        return self.precedence_map[op1] >= self.precedence_map[op2]
 
-    bool isOperator(char c) {
-        return (c == '+' || c == '-' || c == '*' || c == '/');
-    }
+    def convert_to_postfix(self):
+        operators_stack = []
+        self.postfix_expression = ""
 
-    bool hasHigherPrecedence(char op1, char op2) {
-        return precedenceMap[op1] >= precedenceMap[op2];
-    }
+        for char in self.infix_expression:
+            if char == ' ':
+                continue
+            elif self.isalnum(char):
+                self.postfix_expression += char
+            elif char == '(':
+                operators_stack.append(char)
+            elif char == ')':
+                while operators_stack and operators_stack[-1] != '(':
+                    self.postfix_expression += operators_stack.pop()
+                operators_stack.pop()  # Discard the '('
+            elif self.is_operator(char):
+                while (operators_stack and operators_stack[-1] != '('
+                       and self.has_higher_precedence(operators_stack[-1], char)):
+                    self.postfix_expression += operators_stack.pop()
+                operators_stack.append(char)
 
-    void convertToPostfix() {
-        std::stack<char> operators;
-        postfix = "";
+        while operators_stack:
+            self.postfix_expression += operators_stack.pop()
 
-        for (char& c : infix) {
-            if (c == ' ') {
-                continue;
-            } else if (isalnum(c)) {
-                postfix += c;
-            } else if (c == '(') {
-                operators.push(c);
-            } else if (c == ')') {
-                while (!operators.empty() && operators.top() != '(') {
-                    postfix += operators.top();
-                    operators.pop();
-                }
-                operators.pop(); // Discard the '('
-            } else if (isOperator(c)) {
-                while (!operators.empty() && operators.top() != '(' && hasHigherPrecedence(operators.top(), c)) {
-                    postfix += operators.top();
-                    operators.pop();
-                }
-                operators.push(c);
-            }
-        }
+    def get_infix(self, expression):
+        self.infix_expression = expression
 
-        while (!operators.empty()) {
-            postfix += operators.top();
-            operators.pop();
-        }
-    }
+    def show_infix(self):
+        print("Infix Expression:", self.infix_expression)
 
-public:
-    InfixToPostfix() {
-        precedenceMap['+'] = 1;
-        precedenceMap['-'] = 1;
-        precedenceMap['*'] = 2;
-        precedenceMap['/'] = 2;
-    }
+    def show_postfix(self):
+        print("Postfix Expression:", self.postfix_expression)
 
-    void getInfix(const std::string& expression) {
-        infix = expression;
-    }
+    def convert_and_show_postfix(self):
+        self.convert_to_postfix()
+        self.show_postfix()
 
-    void showInfix() const {
-        std::cout << "Infix Expression: " << infix << std::endl;
-    }
+# Main function
+expressions_list = [
+    "A + B - C",
+    "(A + B) * C",
+    "(A + B) * (C - D)",
+    "A + ((B + C) * (E - F) - G) / (H - I)",
+    "A + B * (C + D) - E / F * G + H"
+]
 
-    void showPostfix() const {
-        std::cout << "Postfix Expression: " << postfix << std::endl;
-    }
-
-    void convertAndShowPostfix() {
-        convertToPostfix();
-        showPostfix();
-    }
-};
-
-int main() {
-    std::vector<std::string> expressions = {
-        "A + B - C",
-        "(A + B) * C",
-        "(A + B) * (C - D)",
-        "A + ((B + C) * (E - F) - G) / (H - I)",
-        "A + B * (C + D) - E / F * G + H"
-    };
-
-    for (const auto& exp : expressions) {
-        InfixToPostfix converter;
-        converter.getInfix(exp);
-        converter.showInfix();
-        converter.convertAndShowPostfix();
-        std::cout << std::endl;
-    }
-
-    return 0;
-}
-*/
-0 comments on commit 8ace1d0
+for exp in expressions_list:
+    converter_instance = InfixToPostfixConverter()
+    converter_instance.get_infix(exp)
+    converter_instance.show_infix()
+    converter_instance.convert_and_show_postfix()
+    print()
